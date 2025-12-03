@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import { Progress } from '@/components/ui/progress';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -285,14 +283,19 @@ const Index = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>Прогресс</span>
                       <span className="font-semibold">{lesson.progress}%</span>
                     </div>
-                    <Progress value={lesson.progress} className="h-2" />
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div 
+                        className={`h-full ${lesson.color} rounded-full transition-all duration-500`}
+                        style={{ width: `${lesson.progress}%` }}
+                      />
+                    </div>
                   </div>
-                  <Button className="w-full mt-4 gradient-bg text-white">
+                  <Button className="w-full gradient-bg text-white">
                     Продолжить
                     <Icon name="ArrowRight" size={18} className="ml-2" />
                   </Button>
