@@ -6,6 +6,8 @@ import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
+  const [showLessonContent, setShowLessonContent] = useState(false);
 
   const lessons = [
     {
@@ -133,8 +135,137 @@ const Index = () => {
     }
   };
 
+  const handleLessonClick = (index: number) => {
+    setSelectedLesson(index);
+    setShowLessonContent(true);
+  };
+
+  const handleDownload = (resourceTitle: string) => {
+    const blob = new Blob(
+      [`# ${resourceTitle}\n\nЭто демонстрационный PDF-файл.\nВ реальном проекте здесь будет полный справочный материал.`],
+      { type: 'text/plain' }
+    );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${resourceTitle}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const lessonContents = [
+    {
+      title: 'Времена глаголов',
+      content: `
+        <h3 class="text-2xl font-bold mb-4">Present Simple</h3>
+        <p class="mb-4">Используется для описания регулярных действий и общих истин.</p>
+        <div class="bg-purple-50 p-4 rounded-lg mb-4">
+          <p class="font-semibold mb-2">Примеры:</p>
+          <p>✓ I work every day. (Я работаю каждый день)</p>
+          <p>✓ The sun rises in the east. (Солнце встаёт на востоке)</p>
+        </div>
+        
+        <h3 class="text-2xl font-bold mb-4 mt-6">Present Continuous</h3>
+        <p class="mb-4">Используется для действий, происходящих прямо сейчас.</p>
+        <div class="bg-blue-50 p-4 rounded-lg mb-4">
+          <p class="font-semibold mb-2">Примеры:</p>
+          <p>✓ I am working now. (Я работаю сейчас)</p>
+          <p>✓ She is reading a book. (Она читает книгу)</p>
+        </div>
+      `
+    },
+    {
+      title: 'Артикли',
+      content: `
+        <h3 class="text-2xl font-bold mb-4">Неопределённый артикль (a/an)</h3>
+        <p class="mb-4">Используется с исчисляемыми существительными в единственном числе.</p>
+        <div class="bg-purple-50 p-4 rounded-lg mb-4">
+          <p class="font-semibold mb-2">Правило:</p>
+          <p><strong>a</strong> - перед согласными: a book, a car</p>
+          <p><strong>an</strong> - перед гласными: an apple, an hour</p>
+        </div>
+        
+        <h3 class="text-2xl font-bold mb-4 mt-6">Определённый артикль (the)</h3>
+        <p class="mb-4">Используется когда предмет известен или упоминается повторно.</p>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="font-semibold mb-2">Примеры:</p>
+          <p>✓ The book on the table is mine.</p>
+          <p>✓ I saw a dog. The dog was cute.</p>
+        </div>
+      `
+    },
+    {
+      title: 'Модальные глаголы',
+      content: `
+        <h3 class="text-2xl font-bold mb-4">Can / Could</h3>
+        <p class="mb-4"><strong>Can</strong> - способность, разрешение (настоящее время)</p>
+        <p class="mb-4"><strong>Could</strong> - способность в прошлом, вежливая просьба</p>
+        
+        <h3 class="text-2xl font-bold mb-4 mt-6">Must / Should</h3>
+        <p class="mb-4"><strong>Must</strong> - обязанность, необходимость</p>
+        <p class="mb-4"><strong>Should</strong> - совет, рекомендация</p>
+        
+        <div class="bg-purple-50 p-4 rounded-lg">
+          <p class="font-semibold mb-2">Примеры:</p>
+          <p>✓ You must wear a helmet. (обязательно)</p>
+          <p>✓ You should exercise regularly. (совет)</p>
+        </div>
+      `
+    },
+    {
+      title: 'Условные предложения',
+      content: `
+        <h3 class="text-2xl font-bold mb-4">Zero Conditional</h3>
+        <p class="mb-4">Для общих истин и законов природы.</p>
+        <div class="bg-purple-50 p-4 rounded-lg mb-4">
+          <p><strong>If + Present Simple, Present Simple</strong></p>
+          <p>✓ If you heat water, it boils.</p>
+        </div>
+        
+        <h3 class="text-2xl font-bold mb-4 mt-6">First Conditional</h3>
+        <p class="mb-4">Для реальных ситуаций в будущем.</p>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p><strong>If + Present Simple, will + infinitive</strong></p>
+          <p>✓ If it rains, I will stay home.</p>
+        </div>
+      `
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+      {showLessonContent && selectedLesson !== null && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto animate-scale-in">
+            <div className="sticky top-0 bg-white border-b p-6 flex items-center justify-between">
+              <h2 className="text-3xl font-bold gradient-text">{lessonContents[selectedLesson].title}</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowLessonContent(false)}
+              >
+                <Icon name="X" size={24} />
+              </Button>
+            </div>
+            <div 
+              className="p-6 prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: lessonContents[selectedLesson].content }}
+            />
+            <div className="sticky bottom-0 bg-white border-t p-6">
+              <Button 
+                className="w-full gradient-bg text-white"
+                onClick={() => setShowLessonContent(false)}
+              >
+                Завершить урок
+                <Icon name="CheckCircle" size={18} className="ml-2" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-purple-100 shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -295,7 +426,10 @@ const Index = () => {
                       />
                     </div>
                   </div>
-                  <Button className="w-full gradient-bg text-white">
+                  <Button 
+                    className="w-full gradient-bg text-white"
+                    onClick={() => handleLessonClick(index)}
+                  >
                     Продолжить
                     <Icon name="ArrowRight" size={18} className="ml-2" />
                   </Button>
@@ -410,7 +544,10 @@ const Index = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full gradient-bg text-white">
+                  <Button 
+                    className="w-full gradient-bg text-white"
+                    onClick={() => handleDownload(resource.title)}
+                  >
                     <Icon name="Download" size={18} className="mr-2" />
                     Скачать
                   </Button>
